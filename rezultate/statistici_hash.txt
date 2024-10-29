@@ -1,0 +1,56 @@
+Generare CNP-uri și nume
+
+Județul Alba: 17610 CNP-uri
+Județul Arad: 22159 CNP-uri
+Județul Argeș: 30793 CNP-uri
+Județul Bacău: 32492 CNP-uri
+Județul Bihor: 29786 CNP-uri
+Județul Bistrița-Năsăud: 15992 CNP-uri
+Județul Botoșani: 21224 CNP-uri
+Județul Brașov: 29533 CNP-uri
+Județul Brăila: 15206 CNP-uri
+Județul Buzău: 21880 CNP-uri
+Județul Caraș-Severin: 13323 CNP-uri
+Județul Cluj: 36693 CNP-uri
+Județul Constanța: 35443 CNP-uri
+Județul Covasna: 10808 CNP-uri
+Județul Dâmbovița: 25902 CNP-uri
+Județul Dolj: 32387 CNP-uri
+Județul Galați: 26847 CNP-uri
+Județul Gorj: 17002 CNP-uri
+Județul Harghita: 15774 CNP-uri
+Județul Hunedoara: 19540 CNP-uri
+Județul Ialomița: 13551 CNP-uri
+Județul Iași: 41104 CNP-uri
+Județul Ilfov: 29321 CNP-uri
+Județul Maramureș: 24447 CNP-uri
+Județul Mehedinți: 12661 CNP-uri
+Județul Mureș: 27997 CNP-uri
+Județul Neamț: 24540 CNP-uri
+Județul Olt: 20708 CNP-uri
+Județul Prahova: 37557 CNP-uri
+Județul Satu Mare: 17865 CNP-uri
+Județul Sălaj: 11466 CNP-uri
+Județul Sibiu: 20981 CNP-uri
+Județul Suceava: 34716 CNP-uri
+Județul Teleorman: 17481 CNP-uri
+Județul Timiș: 35148 CNP-uri
+Județul Tulcea: 10446 CNP-uri
+Județul Vaslui: 20245 CNP-uri
+Județul Vâlcea: 18116 CNP-uri
+Județul Vrancea: 18470 CNP-uri
+Județul București: 92767 CNP-uri
+
+Testare căutări pentru 1000 CNP-uri
+
+Statistici Hash Table:
+Număr total CNP-uri: 999981
+Dimensiune tabelă hash: 1500007
+Factor de încărcare: 0.67
+Număr coliziuni: 270468
+
+Statistici căutare:
+Număr minim iterații: 1
+Număr maxim iterații: 2
+Medie iterații: 1.00
+Mediană iterații: 1.00
