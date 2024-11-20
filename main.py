@@ -1,10 +1,9 @@
 import random
 from datetime import datetime
-import sys
 from typing import Dict, List, Tuple, Generator
 import statistics
 import os
-
+import collections
 
 class CNPGenerator:
     def __init__(self):
@@ -41,15 +40,16 @@ class CNPGenerator:
 
     def _init_distributie_varsta(self) -> Dict[str, float]:
         return {
-            "0-14": 0.15,  # 0-14 ani
-            "15-24": 0.12,  # 15-24 ani
-            "25-54": 0.46,  # 25-54 ani
-            "55-64": 0.13,  # 55-64 ani
-            "65+": 0.14  # 65+ ani
+            "0-14": 0.15,    # 0-14 ani
+            "15-24": 0.12,   # 15-24 ani
+            "25-54": 0.46,   # 25-54 ani
+            "55-64": 0.13,   # 55-64 ani
+            "65+": 0.14      # 65+ ani
         }
 
     def _get_an_nastere(self, gen: int) -> int:
         current_year = datetime.now().year % 100
+
         rand = random.random()
 
         if gen in [5, 6]:  # Pentru persoane născute după 2000
@@ -101,7 +101,6 @@ class CNPGenerator:
         cifra_control = self.calculeaza_cifra_control(cnp_partial)
         return cnp_partial + str(cifra_control)
 
-
 class NumeGenerator:
     def __init__(self):
         self.nume = [
@@ -130,11 +129,9 @@ class NumeGenerator:
             prenume = random.choice(self.prenume_masculin)
         return f"{nume} {prenume}"
 
-
 class HashTable:
     def __init__(self, expected_items: int = 1_000_000):
-        # Folosim un număr prim mai mare decât 1.4 * numărul de elemente așteptate
-        self.size = 1_500_007  # Număr prim apropiat de 1.5M
+        self.size = 1000
         self.table = [[] for _ in range(self.size)]
         self.collisions = 0
         self.items = 0
@@ -144,10 +141,8 @@ class HashTable:
         return self.items / self.size
 
     def hash_function(self, key: str) -> int:
-        # Implementare îmbunătățită a funcției de dispersie
-        hash_val = 5381  # Număr prim inițial
+        hash_val = 5381
         for char in key:
-            # hash * 33 + c (known as DJB2)
             hash_val = ((hash_val << 5) + hash_val) + ord(char)
         return hash_val % self.size
 
@@ -158,7 +153,6 @@ class HashTable:
         self.table[index].append((cnp, nume))
         self.items += 1
 
-        # Afișăm statistici la fiecare 100000 inserări
         if self.items % 100000 == 0:
             print(f"Inserări: {self.items}, Factor încărcare: {self.get_load_factor():.2f}, "
                   f"Coliziuni: {self.collisions}")
@@ -177,29 +171,49 @@ class HashTable:
         return [len(bucket) for bucket in self.table]
 
 
-def generate_test_cnps(total_cnps: int, sample_size: int = 1000) -> Generator[str, None, None]:
-    """Generator pentru CNP-uri de test pentru a economisi memoria."""
-    indices = set(random.sample(range(total_cnps), sample_size))
-    current = 0
-    for _ in range(total_cnps):
-        if current in indices:
-            yield str(current)  # Aici ar trebui să fie un CNP valid
-        current += 1
+def analizeaza_distributie(hash_table):
+    # Numărarea elementelor pe fiecare bucket
+    bucket_counts = [len(bucket) for bucket in hash_table.table]
 
+    # Statistici pentru distribuție
+    count_stats = collections.Counter(bucket_counts)
 
+    # Informații detaliate
+    print("\nAnaliza distribuție CNP-uri în tabelul hash:")
+    print(f"Număr total bucketuri: {len(hash_table.table)}")
+    print(f"Bucketuri goale: {bucket_counts.count(0)}")
+    print(f"Bucketuri cu elemente:")
+    for count, freq in sorted(count_stats.items()):
+        print(f"  - {count} elemente: {freq} bucketuri")
+
+    # Calculare statistici
+    min_bucket = min(bucket_counts)
+    max_bucket = max(bucket_counts)
+    medie_bucket = statistics.mean(bucket_counts)
+
+    # Salvare în fișier
+    with open("rezultate/distributie_hash.txt", "w", encoding='utf-8') as f:
+        f.write("Analiza distribuție CNP-uri în tabelul hash\n")
+        f.write(f"Număr total bucketuri: {len(hash_table.table)}\n")
+        f.write(f"Bucketuri goale: {bucket_counts.count(0)}\n")
+        f.write("\nDistribuție bucketuri:\n")
+        for count, freq in sorted(count_stats.items()):
+            f.write(f"{count} elemente: {freq} bucketuri\n")
+
+        f.write("\nStatistici:\n")
+        f.write(f"Minim elemente/bucket: {min_bucket}\n")
+        f.write(f"Maxim elemente/bucket: {max_bucket}\n")
+        f.write(f"Medie elemente/bucket: {medie_bucket:.2f}\n")
 def main():
-    # Creare director pentru rezultate
     if not os.path.exists("rezultate"):
         os.makedirs("rezultate")
 
     print("Inițializare generare CNP-uri")
 
-    # Deschidere fișiere pentru salvare date
     with open("rezultate/cnp_uri.txt", "w", encoding='utf-8') as f_cnp, \
             open("rezultate/cnp_nume.txt", "w", encoding='utf-8') as f_cnp_nume, \
             open("rezultate/statistici_hash.txt", "w", encoding='utf-8') as f_stats:
 
-        # Inițializare generatoare
         cnp_gen = CNPGenerator()
         nume_gen = NumeGenerator()
         hash_table = HashTable()
@@ -207,32 +221,28 @@ def main():
         total_populatie = sum(cnp_gen.populatie_judete.values())
         cnp_generate = 0
 
-        # Generare și salvare CNP-uri și nume
         f_stats.write("Generare CNP-uri și nume\n\n")
 
-        test_cnps = set()  # Folosim set pentru căutare eficientă
+        test_cnps = set()
 
         for judet, populatie in cnp_gen.populatie_judete.items():
             nr_cnp = (populatie * 1000000) // total_populatie
+
             f_stats.write(f"Județul {cnp_gen.judete[judet]}: {nr_cnp} CNP-uri\n")
 
             for _ in range(nr_cnp):
                 cnp = cnp_gen.genereaza_cnp(judet)
                 nume = nume_gen.genereaza_nume(cnp)
 
-                # Salvare CNP și nume
                 f_cnp.write(f"{cnp}\n")
                 f_cnp_nume.write(f"{cnp}: {nume}\n")
 
-                # Inserare în hash table
                 hash_table.insert(cnp, nume)
 
-                # Colectăm un eșantion pentru testare
                 cnp_generate += 1
                 if cnp_generate <= 1000:
                     test_cnps.add(cnp)
 
-        # Testare căutări și salvare rezultate
         print("\nTestare căutări")
         f_stats.write("\nTestare căutări pentru 1000 CNP-uri\n")
 
@@ -241,7 +251,9 @@ def main():
                 gasit, iteratii = hash_table.search(cnp)
                 f_cautari.write(f"CNP: {cnp}, Găsit: {gasit}, Iterații: {iteratii}\n")
 
-        # Salvare statistici
+        # Adăugare analiză distribuție
+        analizeaza_distributie(hash_table)
+
         print("\nSalvare statistici")
         f_stats.write("\nStatistici Hash Table:\n")
         f_stats.write(f"Număr total CNP-uri: {cnp_generate}\n")
@@ -250,7 +262,6 @@ def main():
         f_stats.write(f"Număr coliziuni: {hash_table.collisions}\n")
 
         if hash_table.iterations:
-            # Statistici căutare
             f_stats.write("\nStatistici căutare:\n")
             f_stats.write(f"Număr minim iterații: {min(hash_table.iterations)}\n")
             f_stats.write(f"Număr maxim iterații: {max(hash_table.iterations)}\n")

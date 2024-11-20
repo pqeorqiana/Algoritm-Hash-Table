@@ -45,12 +45,12 @@ Testare căutări pentru 1000 CNP-uri
 
 Statistici Hash Table:
 Număr total CNP-uri: 999981
-Dimensiune tabelă hash: 1500007
-Factor de încărcare: 0.67
-Număr coliziuni: 270468
+Dimensiune tabelă hash: 1000
+Factor de încărcare: 999.98
+Număr coliziuni: 998981
 
 Statistici căutare:
 Număr minim iterații: 1
-Număr maxim iterații: 2
-Medie iterații: 1.00
+Număr maxim iterații: 5
+Medie iterații: 1.52
 Mediană iterații: 1.00
